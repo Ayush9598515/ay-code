@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>register</title>
+  <style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #13131f; /* Deep dark background */
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .form-container {
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 25px 30px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .form-container h2 {
+    margin-top: 0;
+    text-align: center;
+    color: #333;
+    border-bottom: 1px solid #bbb;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #222;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  input[type="radio"],
+  input[type="checkbox"] {
+    width: auto;
+    margin-right: 6px;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  .form-container button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .form-container button:hover {
+    background-color: #3e8e41;
+  }
+
+  small {
+    font-size: 12px;
+    color: #666;
+  }
+</style>
+
+
+</head>
+<body>
+    <div class="form-container">
+  <h2>Registration  Form</h2>
+  <form action="/register" method="post">
+
+    <label for="name">Name</label>
+    <input id="name"  name="name"type="text" placeholder="Enter Name" required>
+
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" placeholder="Enter Email" required>
+
+    <label for="phoneNumber">Phone Number</label>
+    <input id="phoneNumber" name="phonenumber"type="tel" placeholder="Enter Mobile Number" required>
+
+    <label for="dob">Date of Birth</label>
+    <input id="dob" type="date" name="dateofbirth" required>
+
+    <label for="Password">Password</label>
+    <input id="Password" type="password" name="password" placeholder="Enter a valid Password" required>
+
+    <label for="gender">Gender</label>
+    <select id="gender" name="gender" required>
+      <option value="" disabled selected>Select Gender</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="other">Other</option>
+    </select>
+
+    <label>Subscription Plan</label>
+    <input id="basic" type="radio" name="subscription" value="basic">
+    <label for="basic">Basic</label><br>
+    <input id="Premium" type="radio" name="subscription" value="Premium">
+    <label for="Premium">Premium</label><br>
+    <input id="NULL" type="radio" name="subscription" value="NULL">
+    <label for="NULL">NULL</label><br><br>
+
+    <input id="terms" type="checkbox"  required>
+    <label for="terms">I agree to the Terms and Conditions</label><br><br>
+
+    <label for="comments">Comments</label>
+    <textarea id="comments" name="comments"placeholder="Enter your comments" rows="3"></textarea>
+
+    <button type="submit">Submit</button>
+    <script src="index.js"></script>
+  </form>
+</div>
+
+    
+</body>
+</html>
