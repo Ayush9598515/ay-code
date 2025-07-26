@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 app.post("/api/ai-review", async (req, res) => {
     const { code } = req.body;
     if (code === undefined) {
-        return res.status(404).json({ success: false, error: "Empty code!" });
+        return res.status(400).json({ success: false, error: "Empty code!" });
     }
     try {
         const review = await aiCodeReview(code); // Use process.env.OPENAI_API_KEY inside
