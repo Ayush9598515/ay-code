@@ -13,7 +13,8 @@ const PORT = process.env.PORT || 2000;
 app.use(cors({
   origin: [
     process.env.DEV_URL,        // Local dev
-    process.env.FRONTEND_URL,     // Production (Vercel domain or custom domain)
+    process.env.FRONTEND_URL,  
+    "https://www.namescheap.xyz",// Production (Vercel domain or custom domain)
   ],
   credentials: true,
 }));
