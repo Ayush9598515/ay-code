@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 const User = require("../models/user.js");
 
-// ✅ REGISTER Route
+// 🔐 REGISTER
 router.post("/register", async (req, res) => {
   try {
     const {
@@ -46,7 +46,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ✅ LOGIN Route (with HTTP-only cookie)
+// 🔐 LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -71,15 +71,14 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    // ✅ Send token as HTTP-only cookie
+    // ✅ Cookie for cross-origin frontend (e.g. Vercel)
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,        // ✅ true in production with HTTPS
-      sameSite: "None",
-      maxAge: 60 * 60 * 1000, // 1 hour
+      secure: true, // ✅ REQUIRED in production (HTTPS)
+      sameSite: "None", // ✅ Allow cross-site cookies
+      maxAge: 60 * 60 * 1000,
     });
 
-    // ✅ Send username as response
     res.status(200).json({
       message: "Login successful",
       username: user.name,
@@ -90,10 +89,9 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ✅ OPTIONAL: Auth check route (used by frontend to verify session)
+// 🔍 AUTH CHECK (/me)
 router.get("/me", (req, res) => {
   const token = req.cookies.token;
-
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
   }
@@ -105,15 +103,16 @@ router.get("/me", (req, res) => {
     return res.status(401).json({ error: "Invalid token" });
   }
 });
-// ✅ LOGOUT Route
+
+// 🔓 LOGOUT
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "Lax",
-    secure: false, // 🔒 Set true in production with HTTPS
+    secure: true, // ✅ Must match login
+    sameSite: "None",
   });
+
   return res.status(200).json({ message: "Logged out successfully" });
 });
-
 
 module.exports = router;
