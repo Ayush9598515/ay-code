@@ -15,7 +15,7 @@ app.use(cors({
     process.env.DEV_URL,        // Local dev
     process.env.FRONTEND_URL,  
     "https://www.namescheap.xyz",
-    "https://namescheap.xyz", Production (Vercel domain or custom domain)
+    "https://namescheap.xyz",// Production (Vercel domain or custom domain)
   ],
   credentials: true,
 }));
