@@ -60,7 +60,8 @@ router.post('/submit', isAuth, async (req, res) => {
         break;
       }
 
-      const output = result.data.output?.trim() || "";
+       const rawOutput = result.data.output;
+      const output = typeof rawOutput === "string" ? rawOutput.trim() : "";
       const error = result.data.error;
 
       const normalizedOutput = output.replace(/[\[\],]/g, '').trim();
