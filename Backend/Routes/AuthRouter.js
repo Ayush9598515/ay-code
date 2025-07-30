@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 const User = require("../models/user.js");
 
-// 🔐 REGISTER
+// ✅ REGISTER Route
 router.post("/register", async (req, res) => {
   try {
     const {
@@ -46,7 +46,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// 🔐 LOGIN
+// ✅ LOGIN Route (with HTTP-only cookie)
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -71,14 +71,15 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    // ✅ Cookie for cross-origin frontend (e.g. Vercel)
+    // ✅ Send token as HTTP-only cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true, // ✅ REQUIRED in production (HTTPS)
-      sameSite: "None", // ✅ Allow cross-site cookies
-      maxAge: 60 * 60 * 1000,
+      secure: false,        // ✅ true in production with HTTPS
+      sameSite: "Lax", // ✅ Helps prevent CSRF attacks
+      maxAge: 60 * 60 * 1000, // 1 hour
     });
 
+    // ✅ Send username as response
     res.status(200).json({
       message: "Login successful",
       username: user.name,
@@ -89,30 +90,47 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// 🔍 AUTH CHECK (/me)
-router.get("/me", (req, res) => {
+// ✅ OPTIONAL: Auth check route (used by frontend to verify session)
+// ✅ AUTH CHECK Route with isAdmin
+router.get("/me", async (req, res) => {
   const token = req.cookies.token;
+
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.status(200).json({ user: decoded });
+
+    // ✅ Fetch full user from DB
+    const user = await User.findById(decoded.id).select("email name isAdmin");
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        isAdmin: user.isAdmin, // ✅ Include isAdmin
+      },
+    });
   } catch (err) {
     return res.status(401).json({ error: "Invalid token" });
   }
 });
 
-// 🔓 LOGOUT
+// ✅ LOGOUT Route
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: true, // ✅ Must match login
-    sameSite: "None",
+    sameSite: "Lax",
+    secure: false, // 🔒 Set true in production with HTTPS
   });
-
   return res.status(200).json({ message: "Logged out successfully" });
 });
+
 
 module.exports = router;
