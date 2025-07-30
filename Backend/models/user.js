@@ -34,8 +34,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["Free", "Basic", "Premium"],
     default: "Free",
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false,
   }
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
+
