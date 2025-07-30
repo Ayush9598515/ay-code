@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+
 const AUTH_URL = import.meta.env.VITE_AUTH_URL || "http://localhost:2000";
 
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false); // ✅ Admin state
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
@@ -14,20 +16,23 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🔁 Check auth on route change
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const res = await axios.get(`${AUTH_URL}/api/me`, {
-     withCredentials: true,
-    });
-        const nameFromRes = res.data.user.name?.split("@")[0] || res.data.user.email.split("@")[0];
+          withCredentials: true,
+        });
+        const user = res.data.user;
+        const name = user.name?.split("@")[0] || user.email.split("@")[0];
+
         setIsLoggedIn(true);
-        setUserName(nameFromRes);
-        localStorage.setItem("username", nameFromRes);
+        setUserName(name);
+        setIsAdmin(user.isAdmin || false); // ✅ Admin flag
+        localStorage.setItem("username", name);
       } catch (err) {
         setIsLoggedIn(false);
         setUserName("");
+        setIsAdmin(false);
         localStorage.removeItem("username");
       }
     };
@@ -35,7 +40,6 @@ function Navbar() {
     checkAuth();
   }, [location]);
 
-  // 🌗 Handle theme toggle
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -46,16 +50,16 @@ function Navbar() {
     }
   }, [darkMode]);
 
-  // 🚪 Logout handler
   const handleLogout = async () => {
     try {
       await axios.post(`${AUTH_URL}/api/logout`, {}, {
-     withCredentials: true,
+        withCredentials: true,
       });
 
       localStorage.removeItem("username");
       setIsLoggedIn(false);
       setUserName("");
+      setIsAdmin(false);
       setDropdownOpen(false);
       navigate("/login");
       alert("You have been logged out.");
@@ -79,8 +83,13 @@ function Navbar() {
         <div className="hidden md:flex items-center space-x-6 text-sm font-medium">
           <Link to="/" className="hover:text-purple-400">Home</Link>
           <Link to="/dashboard" className="hover:text-purple-400">Dashboard</Link>
-          
           <Link to="/contest" className="hover:text-purple-400">Contest</Link>
+
+          {isAdmin && (
+            <Link to="/add-problem" className="text-green-400 hover:text-green-300">
+              + Add Problem
+            </Link>
+          )}
         </div>
 
         {/* Right Side */}
