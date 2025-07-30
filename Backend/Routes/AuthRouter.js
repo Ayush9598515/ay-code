@@ -74,8 +74,8 @@ router.post("/login", async (req, res) => {
     // ✅ Send token as HTTP-only cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,        // ✅ true in production with HTTPS
-      sameSite: "Lax", // ✅ Helps prevent CSRF attacks
+      secure: true,        // ✅ true in production with HTTPS
+      sameSite: "None", // ✅ Helps prevent CSRF attacks
       maxAge: 60 * 60 * 1000, // 1 hour
     });
 
@@ -126,8 +126,8 @@ router.get("/me", async (req, res) => {
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "Lax",
-    secure: false, // 🔒 Set true in production with HTTPS
+    sameSite: "None",
+    secure: true, // 🔒 Set true in production with HTTPS
   });
   return res.status(200).json({ message: "Logged out successfully" });
 });
