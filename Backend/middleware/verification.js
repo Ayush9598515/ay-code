@@ -1,29 +1,28 @@
 const jwt = require("jsonwebtoken");
 
-// ✅ Middleware to verify token and attach user to request
-const verifyUser = (req, res, next) => {
-  const token = req.cookies.token;
+const verifyToken = (req, res, next) => {
+  console.log("Cookies Received:", req.cookies);
+  let token;
 
-  // 🔒 Token missing
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  } else if (req.cookies?.token) {
+    token = req.cookies.token;
+  }
+
   if (!token) {
-    console.log("🚫 No token found in cookies.");
-    return res.status(401).json({ success: false, message: "Access denied. No token provided." });
+    return res.status(401).json({ message: "No token provided" });
   }
 
   try {
-    // ✅ Verify JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // ✅ Attach user to request
-    req.user = decoded;
-
-    console.log("✅ Authenticated user:", decoded); // 🧠 Debug log
-
-    next(); // continue
+    req.user = decoded; // full payload (id, email, iat, exp)
+    req.userId = decoded.id; // ✅ explicitly set userId
+    next();
   } catch (err) {
-    console.error("❌ Invalid or expired token:", err.message);
-    return res.status(403).json({ success: false, message: "Invalid or expired token." });
+    return res.status(403).json({ message: "Invalid token" });
   }
 };
 
-module.exports = verifyUser;
+module.exports = verifyToken;
