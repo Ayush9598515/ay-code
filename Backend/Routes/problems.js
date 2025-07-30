@@ -1,34 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const Problem = require("../models/Problem"); // Mongoose Model
+const Problem = require("../models/Problem");
+const isAuth = require("../middleware/verification");
+const isAdmin = require("../middleware/isAdmin");
 
-// ✅ API: Get All Problems
+// ✅ GET: All Problems (Public)
 router.get("/problems", async (req, res) => {
   try {
     const problems = await Problem.find({}, "_id title difficulty");
     res.json(problems);
   } catch (err) {
     console.error("❌ Error fetching problems:", err);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// ✅ API: Get Single Problem by ID
+// ✅ GET: Single Problem by ID (Public)
 router.get("/problems/:id", async (req, res) => {
   try {
     const problem = await Problem.findById(req.params.id);
     if (!problem) {
       return res.status(404).json({ error: "Problem not found" });
     }
-
-    // ✏️ Patch description for "Two Sum"
-    if (
-      problem.title === "Two Sum" &&
-      !problem.description.includes("The array has a fixed size")
-    ) {
-      problem.description = `The array has a fixed size and contains integers. ${problem.description}`;
-    }
-
     res.json(problem);
   } catch (err) {
     console.error("❌ Error fetching problem:", err.message);
@@ -36,4 +29,40 @@ router.get("/problems/:id", async (req, res) => {
   }
 });
 
+// ✅ POST: Add New Problem (Admin only)
+router.post("/problems", isAuth, isAdmin, async (req, res) => {
+  const {
+    title,
+    description,
+    difficulty,
+    examples,
+    constraints,
+    starterCode,
+    testCases,
+  } = req.body;
+
+  if (!title || !description || !difficulty || !Array.isArray(testCases)) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    const newProblem = new Problem({
+      title,
+      description,
+      difficulty,
+      examples,
+      constraints,
+      starterCode,
+      testCases,
+    });
+
+    await newProblem.save();
+    res.status(201).json({ message: "✅ Problem added successfully", problem: newProblem });
+  } catch (err) {
+    console.error("❌ Error adding problem:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = router;
+
