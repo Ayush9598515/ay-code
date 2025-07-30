@@ -7,12 +7,12 @@ import Footer from "./component/Footer";
 import Home from "./component/Home";
 import SignIn from "./component/SignIn";
 import Contest from "./component/Contest";
-
 import SignUp from "./component/Signup";
 import Table from "./component/Table";
 import PrivateRoute from "./component/PrivateRoute";
 import ProblemSet from "./component/Problemset";
-import ProblemPage from "./component/ProblemPage"; // ✅ new import
+import ProblemPage from "./component/ProblemPage";
+import AddProblem from "./component/AddProblem"; // ✅ Newly added
 
 function App() {
   return (
@@ -33,16 +33,23 @@ function App() {
               }
             />
             <Route path="/practice" element={<ProblemSet />} />
-             <Route path="/problems/:id" element={<ProblemPage />} /> {/* ✅ Fix here */}
-              <Route path="/contest" element={<Contest />} />
+            <Route path="/problems/:id" element={<ProblemPage />} />
+            <Route path="/contest" element={<Contest />} />
+            <Route
+              path="/add-problem"
+              element={
+                <PrivateRoute>
+                  <AddProblem />
+                </PrivateRoute>
+              }
+            />
           </Routes>
         </div>
         <Footer />
-       
-
       </Router>
     </Provider>
   );
 }
 
 export default App;
+
